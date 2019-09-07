@@ -20,29 +20,14 @@ procedure Formatar(corTexto, corFundo:byte);
 function ReadPWD(tamanho:byte):string;
 { *** ler um password (e desce uma linha) *** }
 function ReadPWDln(tamanho:byte):string;
-
-
-{ *** EM DESENVOLVIMENTO *** }
-
-(*
-.
-.
-.
-{ *** Imprime o texto centralizado *** }
-procedure WriteCet(x,y:byte; msn:string);
-{ *** Imprime o texto colorido *** }
-procedure WritePic(corT, corF:byte; msn:string);
-.
-.
-.
-*)
-
-
+{ *** dá um delay no pascal em milissegundos *** }
+procedure aguardar(t :real);
 
 IMPLEMENTATION {tudo que é visto EXCLUSIVAMENTE pela propria unit (e as
                                implementacoes das units declaradas na interface}
 uses
-  CRT;
+  CRT,
+  DOS;
 
 { ***  Sobre a UNIT ***}
 procedure About;
@@ -144,6 +129,26 @@ function ReadPWDln(tamanho:byte):string;
   begin
   ReadPWDln:=ReadPWD(tamanho);
   WriteLn;
+  end;
+
+{ *** dá um delay no pascal em milissegundos *** }
+procedure aguardar(t :real);
+  function timer :real;
+    var
+      hour,
+      minute,
+      second,
+      sec100 :word;
+    begin
+    GetTime(hour, minute, second, sec100);
+    {//acho que dá para otimizar essa fórmula abaixo!!!}
+    timer := (hour * 3600.0 + minute * 60.0 + second) * 100.0 + 1.0 * sec100;
+    end;
+  var
+    t1 :real;
+  begin
+  t1 := timer;
+  repeat until timer > t1 + (100 * t) /1000;
   end;
 
 begin
