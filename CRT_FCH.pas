@@ -1,4 +1,4 @@
-UNIT CRT_FCH; {versão 0.001}
+UNIT CRT_FCH; {versão 0.002}
 
 INTERFACE {tudo que é visto pelas "estruturas" que o carregar!!!}
 
@@ -20,8 +20,16 @@ procedure Formatar(corTexto, corFundo:byte);
 function ReadPWD(tamanho:byte):string;
 { *** ler um password (e desce uma linha) *** }
 function ReadPWDln(tamanho:byte):string;
-{ *** dá um delay no pascal em milissegundos *** }
-procedure aguardar(t :real);
+
+{versao 002}
+{ *** Imprimir texto de modo centralizado ***}
+procedure WriteCet (texto :string);
+{ *** Da um delay no Pascal em milissegundos *** }
+procedure Aguardar(t :real);
+{ *** Limpa uma linha especifica *** }
+procedure LimparLinha(x, y: byte);
+{ *** Calcula potencia de um numero para expoentes inteiros *** }
+function Potencia(base :real; expoente :integer):double;
 
 IMPLEMENTATION {tudo que é visto EXCLUSIVAMENTE pela propria unit (e as
                                implementacoes das units declaradas na interface}
@@ -131,8 +139,16 @@ function ReadPWDln(tamanho:byte):string;
   WriteLn;
   end;
 
-{ *** dá um delay no pascal em milissegundos *** }
-procedure aguardar(t :real);
+{versao 002}
+{ *** Imprimir texto de modo centralizado *** }
+procedure WriteCet (texto:string);
+  begin
+  GotoXY(40-(length(texto) div 2), WhereY);
+  writeln(texto);
+  end;
+
+{ *** Da um delay no Pascal em milissegundos *** }
+procedure Aguardar(t :real);
   function timer :real;
     var
       hour,
@@ -141,15 +157,40 @@ procedure aguardar(t :real);
       sec100 :word;
     begin
     GetTime(hour, minute, second, sec100);
-    {//acho que dá para otimizar essa fórmula abaixo!!!}
-    timer := (hour * 3600.0 + minute * 60.0 + second) * 100.0 + 1.0 * sec100;
+    timer:=(hour*3600.0 + minute*60.0 + second)*1000.0 + 10.0*sec100; //Converte a hora capturada em milissegundos
     end;
   var
     t1 :real;
   begin
   t1 := timer;
-  repeat until timer > t1 + (100 * t) /1000;
+  writeln(timer);
+  repeat until timer > t1+t;
   end;
+
+{ *** Limpa uma linha especifica *** }
+procedure LimparLinha(x, y: byte);
+  begin
+  GotoXY(x, y); ClrEol;
+  GotoXY(x, y);
+  end;
+
+{*** Calcula potencia de um numero para expoentes inteiros ***}
+function Potencia(base: real; expoente: integer):double;
+  var
+    i            :word;
+    tmp_Potencia :double;
+  begin
+  tmp_Potencia:= 1;
+  if (expoente <> 0) then
+    begin
+    for i:=1 to Abs(expoente) do
+      tmp_Potencia := tmp_Potencia*base;
+    if (expoente > 0) then
+      Potencia := tmp_Potencia
+    else
+      Potencia :=1 / tmp_Potencia;
+    end;
+end;
 
 begin
   ClrScr; {limpa a tela}
